@@ -40,7 +40,7 @@ de modo que **agregar más temas y cursos es solo sembrar contenido**, sin tocar
 | ![Liga](docs/screenshots/dark-4-liga.png) | ![Amigos](docs/screenshots/dark-5-amigos.png) | ![Progreso](docs/screenshots/dark-6-progreso.png) |
 | *Ranking semanal* | *Feed de actividad* | *XP y precisión* |
 
-*Vista móvil de la misma app:* ![Móvil](docs/screenshots/cel-6-completada.png) | *Lección completada en el celular (PWA)*
+Vista móvil (PWA / APK): <img src="docs/screenshots/cel-6-completada.png" width="220" alt="Lección completada en el celular"> *lección completada: +40 XP*
 
 ## ✨ Características
 
