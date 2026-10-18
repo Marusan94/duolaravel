@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aprende Laravel leyendo esta app · laravel-prep</title>
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--ink:#e6e8ec;--muted:#9aa3b2;--acc:#ffc800;--acc2:#58cc02;--code:#0b0d11;--border:#252a34;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 system-ui,Segoe UI,Roboto,sans-serif}
+  header{padding:38px 24px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#141821,#0f1115)}
+  header h1{margin:0 0 6px;font-size:28px}
+  header p{margin:0;color:var(--muted)}
+  main{max-width:900px;margin:0 auto;padding:26px 24px 80px}
+  h2{margin-top:38px;border-left:4px solid var(--acc);padding-left:12px;font-size:21px}
+  h3{margin-top:22px;color:var(--acc);font-size:17px}
+  p,li{color:#d6dae2}
+  code{background:var(--code);border:1px solid var(--border);border-radius:5px;padding:1px 6px;font:0.9em/1.5 ui-monospace,Consolas,monospace;color:#ffe6a3}
+  pre{background:var(--code);border:1px solid var(--border);border-radius:10px;padding:14px 16px;overflow:auto}
+  pre code{border:0;background:none;padding:0;color:#dbe3f0}
+  .map{width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px}
+  .map th,.map td{border:1px solid var(--border);padding:9px 11px;text-align:left;vertical-align:top}
+  .map th{background:#1d2230;color:var(--acc)}
+  .pill{display:inline-block;background:#20303f;color:#8fd0ff;border-radius:20px;padding:1px 10px;font-size:12.5px;margin-right:6px}
+  .tip{background:#152218;border:1px solid #2b3f2e;border-left:4px solid var(--acc2);border-radius:8px;padding:10px 14px;margin:14px 0}
+  .note{background:#231d10;border:1px solid #3f3418;border-left:4px solid var(--acc);border-radius:8px;padding:10px 14px;margin:14px 0}
+  ol.steps{padding-left:22px}
+  ol.steps li{margin:8px 0}
+  footer{color:var(--muted);border-top:1px solid var(--border);padding:18px 24px;text-align:center;font-size:13px}
+  a{color:#8fd0ff}
+</style>
+</head>
+<body>
+<header>
+  <h1>Aprende Laravel leyendo esta app</h1>
+  <p>Guía práctica: cada concepto de Laravel mapeado a los archivos reales de <code>laravel-prep</code>.</p>
+</header>
+<main>
+
+<p>La app corre en <code>http://127.0.0.1:8000</code> · usuario demo <code>demo@example.com</code> · contraseña <code>password</code>.
+Ya vienes de <b>Python · Java/Spring · JS/TS · React</b>: esta guía traduce cada idea a algo que ya conoces.</p>
+
+<h2>0. El mapa mental: Laravel por dentro</h2>
+<p>Laravel es "convención sobre configuración", como Spring Boot pero en PHP. El ciclo de una petición:</p>
+<pre><code>Navegador  →  public/index.php
+            →  bootstrap/app.php      (registra rutas, middleware, manejo de errores)
+            →  routes/web.php         (¿qué código atiende esta URL?)
+            →  Componente Livewire    (app/Livewire/*.php)  ← aquí vive tu lógica de UI
+            →  Servicio               (app/Services/*.php)   ← reglas de negocio
+            →  Modelo Eloquent        (app/Models/*.php)     ← habla con la DB (SQLite)
+            →  Vista Blade            (resources/views/*.blade.php)</code></pre>
+
+<table class="map">
+  <tr><th>Concepto Laravel</th><th>Equivalente mental</th><th>Archivo en esta app</th></tr>
+  <tr><td>Bootstrap</td><td><code>main()</code> de Spring / factory de Flask</td><td><code>bootstrap/app.php</code></td></tr>
+  <tr><td>Rutas</td><td><code>@RequestMapping</code> / <code>@app.route</code></td><td><code>routes/web.php</code>, <code>routes/api.php</code></td></tr>
+  <tr><td>Livewire</td><td>React <code>useState</code>… pero el estado vive en el servidor</td><td><code>app/Livewire/*.php</code></td></tr>
+  <tr><td>Eloquent (ORM)</td><td>JPA / Hibernate · SQLAlchemy</td><td><code>app/Models/*.php</code></td></tr>
+  <tr><td>Migraciones</td><td>Flyway · Alembic</td><td><code>database/migrations/*.php</code></td></tr>
+  <tr><td>Servicios + DI</td><td><code>@Service</code> + inyección de dependencias</td><td><code>app/Services/*.php</code></td></tr>
+  <tr><td>Jobs / Scheduler</td><td><code>@Scheduled</code> · Celery beat</td><td><code>app/Jobs/*</code>, <code>routes/console.php</code></td></tr>
+  <tr><td>API Resources</td><td>DTO / serializers</td><td><code>app/Http/Resources/*.php</code></td></tr>
+  <tr><td>Tests</td><td>JUnit · pytest</td><td><code>tests/Feature/*.php</code></td></tr>
+</table>
+
+<h2>1. Arranque: <code>bootstrap/app.php</code></h2>
+<p>Aquí se decide qué archivos de rutas existen y qué middleware global se aplica. Casi no se toca.</p>
+<pre><code>return Application::configure(basePath: dirname(__DIR__))
+    -&gt;withRouting(
+        web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',      // ← habilita /api/*
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
+    )
+    -&gt;withMiddleware(fn ($m) =&gt; null)
+    -&gt;withExceptions(function ($e) {
+        $e-&gt;shouldRenderJsonWhen(fn ($r) =&gt; $r-&gt;is('api/*') || $r-&gt;expectsJson());
+    })-&gt;create();</code></pre>
+
+<h2>2. Rutas: <code>routes/web.php</code></h2>
+<p>Una URL apunta a un <b>componente Livewire</b> (la clase PHP), no a un "controller" con muchos métodos. Ese es el rasgo distintivo de esta app.</p>
+<pre><code>Route::middleware(['auth'])-&gt;group(function () {
+    Route::get('learn',        LearningPath::class)-&gt;name('learn');
+    Route::get('lesson/{lesson}', LessonPlayer::class)-&gt;name('lesson.play'); // {lesson} = modelo Lesson (route-model binding)
+    Route::get('shop',         Shop::class)-&gt;name('shop');
+    Route::get('leaderboard',  Leaderboard::class)-&gt;name('leaderboard');
+    Route::get('progress',     Progress::class)-&gt;name('progress');
+});</code></pre>
+<div class="note"><b>Route-model binding:</b> <code>{lesson}</code> se convierte automáticamente en un objeto <code>Lesson</code> buscado por id. Si no existe → 404. Como <code>@PathVariable</code> + repositorio, pero gratis.</div>
+
+<h2>3. Livewire: la pieza clave (esto es lo que más te enseña)</h2>
+<p>Livewire permite UI interactiva <b>sin escribir JavaScript</b>: el estado y los métodos viven en una clase PHP; cada interacción del usuario hace una petición y Livewire re-renderiza solo lo necesario. Piensa "React pero el componente corre en el servidor".</p>
+<p>Ejemplo real: <code>app/Livewire/LessonPlayer.php</code>.</p>
+<pre><code>class LessonPlayer extends Component {
+    public Lesson $lesson;      // propiedad pública = "estado" reactivo
+    public int $index = 0;
+    public $selected = null;
+    public ?bool $correct = null;
+
+    public function mount(Lesson $lesson): void { /* init */ }
+
+    public function submit(LessonRunner $runner): void {   // ← inyección por método (DI)
+        $answer = match ($this-&gt;...type) { ... };
+        $result = $runner-&gt;answer(auth()-&gt;user(), $exercise, $answer);
+        $this-&gt;correct = $result['correct'];               // cambiar estado = re-render automático
+    }
+}</code></pre>
+<p>La vista <code>resources/views/livewire/lesson-player.blade.php</code> usa directivas que conectan HTML ↔ PHP:</p>
+<pre><code>&lt;button wire:click="submit"&gt;Comprobar&lt;/button&gt;   &lt;!-- llama al método submit() --&gt;
+&lt;input wire:model="text"&gt;                        &lt;!-- two-way binding con $text --&gt;
+@if ($correct) &lt;p&gt;¡Correcto!&lt;/p&gt; @endif          &lt;!-- render condicional (como JSX) --&gt;</code></pre>
+<div class="tip"><b>Ejercicio de aprendizaje:</b> abre <code>LessonPlayer.php</code> y <code>lesson-player.blade.php</code> en paralelo. Verás que <code>$this-&gt;score++</code> en PHP se refleja en pantalla sin que escribas un solo <code>fetch()</code>.</div>
+
+<h2>4. Eloquent (ORM): <code>app/Models/*.php</code></h2>
+<p>Cada modelo = una tabla. Las relaciones son métodos que devuelven tipos claros.</p>
+<pre><code>class User extends Authenticatable {
+    public function courses(): BelongsToMany {
+        return $this-&gt;belongsToMany(Course::class, 'user_courses')-&gt;withPivot('is_active');
+    }
+    public function streak(): HasOne { return $this-&gt;hasOne(Streak::class); }
+
+    public function totalXp(): int {                       // método de dominio, no columna
+        return (int) $this-&gt;xpEvents()-&gt;sum('amount');
+    }
+}</code></pre>
+<table class="map">
+  <tr><th>Eloquent</th><th>JPA / SQLAlchemy</th></tr>
+  <tr><td><code>belongsTo / hasMany / hasOne / belongsToMany</code></td><td><code>@ManyToOne</code>, <code>@OneToMany</code>, <code>relationship()</code></td></tr>
+  <tr><td><code>User::firstOrCreate([...], [...])</code></td><td>upsert / <code>get_or_create</code></td></tr>
+  <tr><td><code>$casts = ['started_at' =&gt; 'datetime']</code></td><td>convertidores de tipo</td></tr>
+  <tr><td><code>orderByDesc('weekly_xp')-&gt;get()</code></td><td>query builder / Criteria</td></tr>
+</table>
+
+<h2>5. Migraciones: <code>database/migrations/</code></h2>
+<p>El esquema se versiona en código, igual que Flyway/Alembic. Ejemplo de <code>..._create_competition_tables.php</code>:</p>
+<pre><code>Schema::create('league_members', function (Blueprint $table) {
+    $table-&gt;id();
+    $table-&gt;foreignId('league_id')-&gt;constrained()-&gt;cascadeOnDelete();
+    $table-&gt;foreignId('user_id')-&gt;constrained()-&gt;cascadeOnDelete();
+    $table-&gt;unsignedInteger('weekly_xp')-&gt;default(0);
+    $table-&gt;unique(['league_id', 'user_id']);
+});</code></pre>
+<pre><code>php artisan migrate:fresh --seed   # reconstruye la DB y la siembra (como alembic upgrade + seed)</code></pre>
+
+<h2>6. Servicios (reglas de negocio) + Inyección de Dependencias</h2>
+<p>Aunque Livewire ya es una clase, la lógica de negocio se saca a <code>app/Services</code> para poder testearla sin UI — exactamente el patrón <code>@Service</code> en Spring.</p>
+<pre><code>class LessonRunner {
+    public function __construct(
+        private ExerciseEngine $engine,          // ← Laravel inyecta estas clases solo
+        private GamificationService $gamification,
+        private LeagueService $leagues,
+        private AchievementsService $achievements,
+    ) {}
+
+    public function complete(User $user, Lesson $lesson, int $score): array {
+        $this-&gt;gamification-&gt;awardXp($user, $lesson-&gt;xp_reward, 'lesson', $lesson);
+        $this-&gt;gamification-&gt;touchStreak($user);
+        return $this-&gt;achievements-&gt;evaluate($user);   // devuelve logros desbloqueados
+    }
+}</code></pre>
+<div class="tip"><b>Clave de DI en Laravel:</b> no declaras <code>new LessonRunner()</code> en ningún lado. Pides el tipo en el constructor o en el método y el <i>service container</i> lo construye. Es el <code>ApplicationContext</code> de Spring, activado por defecto.</div>
+
+<h2>7. Jobs y Scheduler: <code>app/Jobs</code> + <code>routes/console.php</code></h2>
+<pre><code>// routes/console.php  ← como @Scheduled / crontab en código
+Schedule::job(new RegenerateHearts)-&gt;everyThirtyMinutes();
+Schedule::command('league:close-week')-&gt;weeklyOn(0, '23:00');
+
+// app/Console/Commands/CloseLeagueWeek.php implementa la lógica del comando</code></pre>
+<pre><code>php artisan schedule:list     # ver tareas programadas
+php artisan schedule:run      # (en prod: un cron llama a este cada minuto)</code></pre>
+
+<h2>8. API + Resources: JSON con forma controlada</h2>
+<p>Breeze usa <b>Blade</b> (HTML) para web, pero también exponemos una API tipo Duolingo. Un <code>Resource</code> transforma el modelo → JSON (como un DTO).</p>
+<pre><code>class CourseResource extends JsonResource {              // app/Http/Resources/CourseResource.php
+    public function toArray(Request $request): array {
+        return [
+            'learning_language' =&gt; $this-&gt;toLanguage?-&gt;code,   // snake_case, como la API real de Duolingo
+            'num_learners'      =&gt; (int) $this-&gt;userCourses()-&gt;count(),
+            'phase'             =&gt; 1,
+        ];
+    }
+}</code></pre>
+<pre><code>GET /api/v1/config              GET /api/v1/courses
+GET /api/v1/users/{id}/progress GET /api/v1/leaderboard</code></pre>
+
+<h2>9. Tests: <code>tests/Feature/*.php</code></h2>
+<p>Los tests corren contra una DB limpia (<code>RefreshDatabase</code>). Comparan comportamiento, no implementación.</p>
+<pre><code>class ApiTest extends TestCase {
+    use RefreshDatabase;
+
+    public function test_courses_endpoint_returns_flat_list_in_duolingo_shape(): void {
+        $json = $this-&gt;getJson('/api/v1/courses')-&gt;assertOk()-&gt;json();
+        $this-&gt;assertArrayHasKey('learning_language', $json[0]);
+    }
+}</code></pre>
+<pre><code>php artisan test          # toda la suite (JUnit/pytest para PHP)
+php artisan test --filter=LessonFlowTest</code></pre>
+
+<h2>10. Tu ruta de lectura recomendada (de lo simple a lo complejo)</h2>
+<ol class="steps">
+  <li><code>routes/web.php</code> — entiende el mapa de URLs.</li>
+  <li><code>app/Livewire/LessonPlayer.php</code> + su blade — el concepto estrella (Livewire).</li>
+  <li><code>app/Services/ExerciseEngine.php</code> — lógica pura y testeable, con <code>match()</code> (el "switch expression" de PHP).</li>
+  <li><code>app/Models/User.php</code> + <code>Course.php</code> — relaciones Eloquent.</li>
+  <li><code>database/migrations/</code> — cómo se modela el esquema.</li>
+  <li><code>tests/Feature/ApiTest.php</code> — cómo se prueba una API.</li>
+  <li><code>app/Services/LessonRunner.php</code> — orquestación e inyección de dependencias.</li>
+</ol>
+
+<h2>11. Chuleta de comandos</h2>
+<pre><code>php artisan serve                 # levantar el servidor
+php artisan route:list            # ver TODAS las rutas
+php artisan migrate:fresh --seed  # recrear DB + datos demo
+php artisan test                  # correr tests
+php artisan tinker                # REPL con tu app cargada (como `python`/`jshell`)
+php artisan make:model Foo -m     # generar modelo + migración
+php artisan make:livewire Foo     # generar componente Livewire</code></pre>
+
+<div class="note"><b>Nota (PHP vs lo que conoces):</b> <code>-&gt;</code> = acceso a objeto (como <code>.</code> en Java/Python). <code>::</code> = método/constante estática o de clase. <code>=&gt;</code> = clave→valor en arrays. <code>$</code> = variable. Los tipos se declaran con <code>: int</code> al final (return type) o antes de la variable.</div>
+
+</main>
+<footer>Generado para laravel-prep · 40 tests / 127 assertions verdes · <span class="pill">Blade</span><span class="pill">Livewire 3</span><span class="pill">Laravel 13</span></footer>
+</body>
+</html>

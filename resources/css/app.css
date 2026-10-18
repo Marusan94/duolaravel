@@ -1,0 +1,381 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --duo-surface: 255 255 255;
+        --duo-card: 255 255 255;
+        --duo-ink: 75 75 75;
+        --duo-gray: 119 119 119;
+        --duo-silver: 175 175 175;
+        --duo-border: 229 229 229;
+        --duo-border-strong: 212 212 212;
+        --duo-soft: 247 247 247;
+        --duo-glow: 88 204 2;
+    }
+
+    [data-theme='menta'] {
+        --duo-surface: 228 247 242;
+        --duo-card: 255 255 255;
+        --duo-ink: 30 61 56;
+        --duo-gray: 82 118 111;
+        --duo-silver: 141 173 167;
+        --duo-border: 199 229 221;
+        --duo-border-strong: 173 214 203;
+        --duo-soft: 240 251 248;
+        --duo-glow: 13 148 136;
+    }
+
+    [data-theme='amanecer'] {
+        --duo-surface: 255 236 224;
+        --duo-card: 255 252 248;
+        --duo-ink: 94 52 34;
+        --duo-gray: 145 96 70;
+        --duo-silver: 194 156 134;
+        --duo-border: 250 216 192;
+        --duo-border-strong: 243 199 166;
+        --duo-soft: 255 244 236;
+        --duo-glow: 255 122 26;
+    }
+
+    [data-theme='noche'] {
+        --duo-surface: 19 31 36;
+        --duo-card: 32 47 54;
+        --duo-ink: 241 247 251;
+        --duo-gray: 143 163 173;
+        --duo-silver: 100 118 127;
+        --duo-border: 55 70 79;
+        --duo-border-strong: 64 81 91;
+        --duo-soft: 44 61 69;
+        --duo-glow: 28 176 246;
+        color-scheme: dark;
+    }
+
+    [data-theme='selva'] {
+        --duo-surface: 10 26 16;
+        --duo-card: 20 38 26;
+        --duo-ink: 232 246 235;
+        --duo-gray: 138 168 146;
+        --duo-silver: 92 122 101;
+        --duo-border: 33 56 41;
+        --duo-border-strong: 43 72 52;
+        --duo-soft: 26 47 33;
+        --duo-glow: 124 198 45;
+        color-scheme: dark;
+    }
+
+    [data-theme='uva'] {
+        --duo-surface: 23 14 37;
+        --duo-card: 36 25 56;
+        --duo-ink: 240 233 250;
+        --duo-gray: 162 148 185;
+        --duo-silver: 118 104 143;
+        --duo-border: 54 40 80;
+        --duo-border-strong: 66 49 97;
+        --duo-soft: 43 31 65;
+        --duo-glow: 168 111 255;
+        color-scheme: dark;
+    }
+
+    /* Compatibilidad: 'oceano' se conserva como variante del tema oscuro azul */
+    [data-theme='oceano'] {
+        --duo-surface: 19 31 36;
+        --duo-card: 32 47 54;
+        --duo-ink: 241 247 251;
+        --duo-gray: 143 163 173;
+        --duo-silver: 100 118 127;
+        --duo-border: 55 70 79;
+        --duo-border-strong: 64 81 91;
+        --duo-soft: 44 61 69;
+        --duo-glow: 28 176 246;
+        color-scheme: dark;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+
+    html {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+        @apply font-sans text-duo-ink bg-duo-surface;
+        font-weight: 700;
+    }
+
+    /* Resplandor decorativo sutil (por tema) — nunca tapa el contenido */
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+            radial-gradient(700px 320px at 88% -6%, rgb(var(--duo-glow) / .10), transparent 62%),
+            radial-gradient(560px 300px at -8% 104%, rgb(var(--duo-glow) / .07), transparent 62%);
+    }
+
+    h1, h2, h3, h4 {
+        @apply text-duo-ink;
+        font-weight: 800;
+    }
+}
+
+@layer components {
+    /* ============================================================
+       BOTONES 3D — la firma visual de Duolingo
+       ============================================================ */
+    .duo-btn {
+        @apply relative inline-flex select-none items-center justify-center gap-2;
+        @apply rounded-2xl px-5 py-3 text-[15px] font-extrabold uppercase leading-none tracking-[.8px] text-white;
+        border-bottom: 4px solid rgba(0, 0, 0, .22);
+        transition: filter .12s ease, transform .06s ease, border-bottom-width .06s ease;
+    }
+    .duo-btn:hover { filter: brightness(1.08); }
+    .duo-btn:active { transform: translateY(4px); border-bottom-width: 0; }
+    .duo-btn:disabled {
+        @apply cursor-not-allowed bg-duo-border text-duo-silver;
+        border-bottom-color: rgb(var(--duo-border-strong));
+        filter: none;
+        transform: none;
+    }
+
+    .duo-btn--green  { background: #58CC02; border-bottom-color: #58A700; }
+    .duo-btn--blue   { background: #1CB0F6; border-bottom-color: #1899D6; }
+    .duo-btn--red    { background: #FF4B4B; border-bottom-color: #EA2B2B; }
+    .duo-btn--yellow { background: #FFC800; border-bottom-color: #E5A900; color: #4B4B4B; }
+    .duo-btn--purple { background: #CE82FF; border-bottom-color: #A560E8; }
+    .duo-btn--white  { background: rgb(var(--duo-card)); border-bottom-color: rgb(var(--duo-border)); @apply text-duo-blue; }
+    .duo-btn--ghost  { background: transparent; border-color: transparent; @apply text-duo-silver; }
+    .duo-btn--ghost:hover { @apply text-duo-gray; filter: none; }
+    .duo-btn--sm { @apply rounded-xl px-4 py-2 text-[13px]; border-bottom-width: 3px; }
+    .duo-btn--wide { @apply w-full; }
+
+    /* ============================================================
+       TARJETAS
+       ============================================================ */
+    .duo-card {
+        @apply rounded-2xl border-2 border-duo-border bg-duo-card p-5;
+    }
+    .duo-card--soft { @apply bg-duo-soft; }
+
+    /* ============================================================
+       OPCIONES DE RESPUESTA (lesson player)
+       ============================================================ */
+    .duo-option {
+        @apply flex w-full cursor-pointer items-center gap-3 rounded-2xl border-2 border-duo-border bg-duo-card px-4 py-3 text-left text-[17px] text-duo-ink;
+        border-bottom-width: 4px;
+        border-bottom-color: rgb(var(--duo-border));
+        transition: background .12s, border-color .12s, color .12s, transform .14s ease;
+    }
+    .duo-option:hover { background: rgb(var(--duo-soft)); }
+    .duo-option--selected {
+        @apply border-duo-blue bg-duo-blue-tint text-duo-blue-dark;
+        border-bottom-color: #1899D6;
+    }
+    .duo-option--correct {
+        @apply border-duo-green bg-duo-green-tint text-duo-green-dark;
+        border-bottom-color: #58A700;
+    }
+    .duo-option--wrong {
+        @apply border-duo-red bg-duo-red-tint text-duo-red-dark;
+        border-bottom-color: #EA2B2B;
+    }
+
+    /* ============================================================
+       NODOS DEL CAMINO (learning path)
+       ============================================================ */
+    .duo-node {
+        @apply relative grid place-items-center rounded-full text-[30px] leading-none;
+        width: 76px;
+        height: 76px;
+    }
+    .duo-node--active {
+        background: #58CC02;
+        border-bottom: 6px solid #58A700;
+        box-shadow: 0 0 0 6px rgba(88, 204, 2, .18);
+    }
+    .duo-node--done {
+        background: #FFC800;
+        border-bottom: 6px solid #E5A900;
+    }
+    .duo-node--locked {
+        background: rgb(var(--duo-border));
+        border-bottom: 6px solid rgb(var(--duo-border-strong));
+        @apply text-duo-silver;
+    }
+    .duo-node--legendary {
+        background: #CE82FF;
+        border-bottom: 6px solid #A560E8;
+    }
+
+    /* ============================================================
+       CHIPS / PÍLDORAS
+       ============================================================ */
+    .duo-chip {
+        @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[15px] font-extrabold;
+    }
+
+    /* ============================================================
+       BARRA DE PROGRESO
+       ============================================================ */
+    .duo-progress {
+        @apply h-4 w-full overflow-hidden rounded-full bg-duo-border;
+    }
+    .duo-progress > span {
+        @apply block h-full rounded-full bg-duo-green;
+        transition: width .3s ease;
+    }
+
+    /* ============================================================
+       BANNER DE FEEDBACK (verde/rojo)
+       ============================================================ */
+    .duo-banner {
+        @apply flex items-center gap-3 rounded-2xl px-4 py-3 text-[17px] font-extrabold;
+    }
+    .duo-banner--ok { @apply bg-duo-green-tint text-duo-green-dark; }
+    .duo-banner--bad { @apply bg-duo-red-tint text-duo-red-dark; }
+
+    /* ============================================================
+       ITEM ACTIVO DEL SIDEBAR
+       ============================================================ */
+    .duo-nav-item {
+        @apply flex items-center gap-4 rounded-xl border-2 border-transparent px-4 py-3 text-[15px] font-extrabold uppercase tracking-[.8px] text-duo-gray;
+        transition: background .12s, color .12s;
+    }
+    .duo-nav-item:hover { @apply bg-duo-soft text-duo-ink; }
+    .duo-nav-item--active {
+        @apply border-duo-blue bg-duo-blue-tint text-duo-blue-dark;
+    }
+
+    /* ============================================================
+       SCROLLBAR (sutil)
+       ============================================================ */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+@layer utilities {
+    .text-balance { text-wrap: balance; }
+}
+
+@layer components {
+    /* ============================================================
+       MICRO-INTERACCIONES (feedback, vida, concentración)
+       ============================================================ */
+
+    /* Aparición suave del contenido */
+    @keyframes duoFadeUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: none; }
+    }
+    .duo-fade-up { animation: duoFadeUp .38s cubic-bezier(.22, 1, .36, 1) both; }
+
+    /* Sacudida sutil (corazones al fallar) */
+    @keyframes duoShake {
+        0%, 100% { transform: translateX(0); }
+        20% { transform: translateX(-6px); }
+        40% { transform: translateX(6px); }
+        60% { transform: translateX(-4px); }
+        80% { transform: translateX(4px); }
+    }
+    .animate-duo-shake { animation: duoShake .45s ease; }
+
+    /* Llama de racha viva */
+    @keyframes duoFlicker {
+        0%, 100% { transform: scale(1) rotate(-2deg); filter: brightness(1); }
+        50%      { transform: scale(1.1) rotate(3deg); filter: brightness(1.18); }
+    }
+    .animate-duo-flicker { animation: duoFlicker 1.8s ease-in-out infinite; transform-origin: 50% 85%; }
+
+    /* Anillo pulsante del nodo activo */
+    @keyframes duoRing {
+        0%   { box-shadow: 0 0 0 0 rgb(88 204 2 / .40); }
+        70%  { box-shadow: 0 0 0 18px rgb(88 204 2 / 0); }
+        100% { box-shadow: 0 0 0 0 rgb(88 204 2 / 0); }
+    }
+    .duo-ring-pulse { animation: duoRing 2.4s ease-out infinite; }
+
+    /* Botón "listo para comprobar" */
+    @keyframes duoReady {
+        0%, 100% { box-shadow: 0 0 0 0 rgb(88 204 2 / .35); }
+        55%      { box-shadow: 0 0 0 9px rgb(88 204 2 / 0); }
+    }
+    .duo-ready-pulse { animation: duoReady 1.9s ease-out infinite; }
+
+    /* Aparición del resultado en cada opción */
+    @keyframes duoPopIn {
+        0%   { transform: scale(.97); }
+        60%  { transform: scale(1.02); }
+        100% { transform: scale(1); }
+    }
+    .animate-duo-popin { animation: duoPopIn .28s ease-out; }
+
+    /* Opciones de respuesta: se levantan al pasar el cursor */
+    .duo-option:not(:disabled):hover { transform: translateY(-2px); }
+    .duo-option:not(:disabled):active { transform: translateY(1px); }
+
+    /* Nodo del camino: respuesta táctil */
+    .duo-skill-link { transition: transform .16s ease, filter .16s ease; }
+    .duo-skill-link:hover { transform: scale(1.05); }
+    .duo-skill-link:active { transform: scale(.97); }
+
+    /* Barra de progreso de la lección, animada */
+    .duo-progress > span { transition: width .45s cubic-bezier(.22, 1, .36, 1); }
+
+    /* Chips del header: pop al pasar el cursor */
+    .duo-chip { transition: transform .14s ease; }
+    .duo-chip:hover { transform: scale(1.08); }
+
+    /* Cambio de tema con transición suave (temporal) */
+    .theme-anim,
+    .theme-anim * {
+        transition: background-color .35s ease, border-color .35s ease, color .35s ease !important;
+    }
+
+    /* Tarjetas interactivas: se levantan al pasar el cursor */
+    .duo-card-hover { transition: transform .16s ease, border-color .16s ease; }
+    .duo-card-hover:hover {
+        transform: translateY(-3px);
+        border-color: rgb(var(--duo-border-strong));
+    }
+
+    /* Aparición escalonada de listas y grids */
+    .duo-stagger > * { animation: duoFadeUp .38s cubic-bezier(.22, 1, .36, 1) both; }
+    .duo-stagger > *:nth-child(1) { animation-delay: .03s; }
+    .duo-stagger > *:nth-child(2) { animation-delay: .08s; }
+    .duo-stagger > *:nth-child(3) { animation-delay: .13s; }
+    .duo-stagger > *:nth-child(4) { animation-delay: .18s; }
+    .duo-stagger > *:nth-child(5) { animation-delay: .23s; }
+    .duo-stagger > *:nth-child(6) { animation-delay: .28s; }
+    .duo-stagger > *:nth-child(7) { animation-delay: .33s; }
+    .duo-stagger > *:nth-child(n+8) { animation-delay: .38s; }
+
+    /* ============================================================
+       NAVEGACIÓN FLUIDA (SPA): barra de progreso + atenúado
+       ============================================================ */
+    #duo-nav-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 3px;
+        width: 0;
+        z-index: 100;
+        pointer-events: none;
+        background: linear-gradient(90deg, #58CC02, #89E219);
+        border-radius: 0 3px 3px 0;
+        opacity: 0;
+    }
+
+    main { transition: opacity .15s ease; }
+    html.duo-nav-busy main { opacity: .6; transition: opacity .15s ease .12s; }
+
+    /* Enlace de navegación pulsado, antes de que Livewire confirme el cambio */
+    .duo-nav-item.duo-pending {
+        @apply border-duo-blue bg-duo-blue-tint text-duo-blue-dark;
+    }
+    nav a.duo-pending { @apply text-duo-blue; }
+}
