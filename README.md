@@ -1,6 +1,6 @@
 <div align="center">
 
-![duoLaravel](docs/screenshots/cel-1-inicio.png)
+![duoLaravel](docs/screenshots/dark-2-aprender.png)
 
 # 🦉 duoLaravel
 
@@ -30,10 +30,17 @@ alimenta la [versión Android offline (APK)](https://github.com/Marusan94/duolar
 Todo el contenido (unidades → habilidades → lecciones → ejercicios) vive en la base de datos,
 de modo que **agregar más temas y cursos es solo sembrar contenido**, sin tocar código.
 
-| | |
-|:---:|:---:|
-| ![Ejercicio](docs/screenshots/cel-2-ejercicio.png) | ![Completada](docs/screenshots/cel-6-completada.png) |
-| *Ejercicios con feedback inmediato* | *Lección completada: XP + racha* |
+### 🖼️ Capturas (tema "noche" — modo oscuro)
+
+| Auth | Aprender | Tienda |
+|:---:|:---:|:---:|
+| ![Login](docs/screenshots/dark-1-login.png) | ![Aprender](docs/screenshots/dark-2-aprender.png) | ![Tienda](docs/screenshots/dark-3-tienda.png) |
+| *Inicio de sesión* | *Ruta gamificada* | *Gemas y potenciadores* |
+| **Liga** | **Amigos** | **Progreso** |
+| ![Liga](docs/screenshots/dark-4-liga.png) | ![Amigos](docs/screenshots/dark-5-amigos.png) | ![Progreso](docs/screenshots/dark-6-progreso.png) |
+| *Ranking semanal* | *Feed de actividad* | *XP y precisión* |
+
+*Vista móvil de la misma app:* ![Móvil](docs/screenshots/cel-6-completada.png) | *Lección completada en el celular (PWA)*
 
 ## ✨ Características
 
@@ -50,7 +57,7 @@ de modo que **agregar más temas y cursos es solo sembrar contenido**, sin tocar
 - 🔔 Notificaciones de la app
 - 📱 **APK Android offline** generada desde el mismo currículo ([repo APK](https://github.com/Marusan94/duolaravel-apk))
 - 🌐 **PWA instalable** (manifest + íconos propios)
-- 🎨 6 temas de color y diseño responsive estilo Duolingo
+- 🎨 6 temas de color (incluido modo oscuro "noche") y diseño responsive estilo Duolingo
 
 ## 🚀 Inicio rápido
 
